@@ -1,0 +1,25 @@
+{
+  "projectName": "docs",
+  "projectOwner": "kkame",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "natz92",
+      "name": "Natz",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/25763747?v=4",
+      "profile": "https://github.com/natz92",
+      "contributions": [
+        "infra",
+        "test",
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
