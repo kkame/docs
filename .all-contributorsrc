@@ -20,6 +20,17 @@
         "code",
         "translation"
       ]
+    },
+    {
+      "login": "kkame",
+      "name": "KKAME",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/4939813?v=4",
+      "profile": "http://kkame.net",
+      "contributions": [
+        "infra",
+        "test",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
