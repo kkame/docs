@@ -215,6 +215,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "XpressEngine",
+      "name": "XpressEngine",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1429259?v=4",
+      "profile": "https://www.xpressengine.io/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7
