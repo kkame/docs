@@ -206,6 +206,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "ModernPug",
+      "name": "Modern PHP User Group",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/8666157?v=4",
+      "profile": "http://modernpug.org",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7
