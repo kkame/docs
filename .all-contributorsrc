@@ -1,6 +1,6 @@
 {
   "projectName": "docs",
-  "projectOwner": "laravelkr",
+  "projectOwner": "kkame",
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
@@ -24,7 +24,8 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/4939813?v=4",
       "profile": "http://kkame.net",
       "contributions": [
-        "doc"
+        "doc",
+        "bug"
       ]
     },
     {
