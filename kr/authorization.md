@@ -9,6 +9,8 @@
     - [Gates 작성하기](#writing-gates)
     - [Authorizing Actions](#authorizing-actions-via-gates)
     - [액션을 수행할 수 있는 권한 확인하기](#authorizing-actions-via-gates)
+    - [Gate Responses](#gate-responses)
+    - [Gate Responses](#gate-responses)
     - [Intercepting Gate Checks](#intercepting-gate-checks)
     - [Gate 체크 로직의 후킹](#intercepting-gate-checks)
 - [Creating Policies](#creating-policies)
@@ -21,6 +23,8 @@
 - [Policies 작성하기](#writing-policies)
     - [Policy Methods](#policy-methods)
     - [Policy 메소드](#policy-methods)
+    - [Policy Responses](#policy-responses)
+    - [Policy Responses](#policy-responses)
     - [Methods Without Models](#methods-without-models)
     - [모델없는 메소드](#methods-without-models)
     - [Guest Users](#guest-users)
@@ -37,6 +41,8 @@
     - [컨트롤러 헬퍼를 통해서](#via-controller-helpers)
     - [Via Blade Templates](#via-blade-templates)
     - [블레이드 템플릿을 통해서](#via-blade-templates)
+    - [Supplying Additional Context](#supplying-additional-context)
+    - [추가 문맥 제공](#supplying-additional-context)
 
 <a name="introduction"></a>
 ## Introduction
@@ -80,7 +86,7 @@ Gate는 사용자가 주어진 액션에 대해서 수행할 수 있는 권한�
         });
 
         Gate::define('update-post', function ($user, $post) {
-            return $user->id == $post->user_id;
+            return $user->id === $post->user_id;
         });
     }
 
@@ -144,13 +150,77 @@ You may authorize multiple actions at a time with the `any` or `none` methods:
         // The user cannot update or delete the post
     }
 
+#### Authorizing Or Throwing Exceptions
+#### 승인 또는 예외 던지기
+
+If you would like to attempt to authorize an action and automatically throw an `Illuminate\Auth\Access\AuthorizationException` if the user is not allowed to perform the given action, you may use the `Gate::authorize` method. Instances of `AuthorizationException` are automatically converted to `403` HTTP response:
+
+작업에 대한 권한을 승인할 때 사용자가 주어진 작업이 허가되지 않은 경우 자동으로 `Illuminate\Auth\Access\AuthorizationException` 예외를 던지려면 `Gate::authorize` 메소드를 사용할 수 있습니다. `AuthorizationException`의 인스턴스는 자동으로 `403` HTTP 응답으로 변환됩니다.
+
+    Gate::authorize('update-post', $post);
+
+    // The action is authorized...
+
+#### Supplying Additional Context
+#### 추가 문맥 제공
+
+The gate methods for authorizing abilities (`allows`, `denies`, `check`, `any`, `none`, `authorize`, `can`, `cannot`) and the authorization [Blade directives](#via-blade-templates) (`@can`, `@cannot`, `@canany`) can receive an array as the second argument. These array elements are passed as parameters to gate, and can be used for additional context when making authorization decisions:
+
+승인할 수 있는 능력의 게이트 메서드(`allows`, `denies`, `check`, `any`, `none`, `authorize`, `can`, `cannot`)와 승인 [블레이드 지시어](#via-Blade-templates) (`@can`, `@cannot`, `@canany`)는 두 번째 인수로 배열을 받을 수 있습니다. 이러한 배열 요소는 게이트의 매개 변수로 전달되며 권한 부여 결정시 추가 문맥에 사용할 수 있습니다.
+
+    Gate::define('create-post', function ($user, $category, $extraFlag) {
+        return $category->group > 3 && $extraFlag === true;
+    });
+
+    if (Gate::check('create-post', [$category, $extraFlag])) {
+        // The user can create the post...
+    }
+
+<a name="gate-responses"></a>
+### Gate Responses
+### Gate Responses
+
+So far, we have only examined gates that return simple boolean values. However, sometimes you may wish to return a more detail response, including an error message. To do so, you may return a `Illuminate\Auth\Access\Response` from your gate:
+
+지금까지 간단한 부울 값을 반환하는 게이트만 검사했습니다. 그러나 때로는 오류 메시지를 포함하여 더 자세한 응답을 반환 할 수도 있습니다. 이를 위해 게이트에서 `Illuminate\Auth\Access\Response`를 반환 할 수 있습니다.
+
+
+    use Illuminate\Support\Facades\Gate;
+    use Illuminate\Auth\Access\Response;
+
+    Gate::define('edit-settings', function ($user) {
+        return $user->isAdmin
+                    ? Response::allow()
+                    : Response::deny('You must be a super administrator.');
+    });
+
+When returning an authorization response from your gate, the `Gate::allows` method will still return a simple boolean value; however, you may use use the `Gate::inspect` method to get the full authorization response returned by the gate:
+
+게이트에서 인증 응답을 반환 할 때 `Gate::allows` 메소드는 여전히 간단한 부울 값을 반환하지만 `Gate::inspect` 메소드를 사용하면 게이트에서 반환 된 전체 인증 응답을 얻을 수 있습니다.
+
+    $response = Gate::inspect('edit-settings', $post);
+
+    if ($response->allowed()) {
+        // The action is authorized...
+    } else {
+        echo $response->message();
+    }
+
+Of course, when using the `Gate::authorize` method to throw an `AuthorizationException` if the action is not authorized, the error message provided by the authorization response will be propagated to the HTTP response:
+
+물론, 작업이 승인되지 않은 경우 `Gate::authorize` 메소드를 사용하여 `AuthorizationException`을 발생 시키면, 인증 응답이 제공하는 오류 메시지가 HTTP 응답으로 전파됩니다.
+
+    Gate::authorize('edit-settings', $post);
+
+    // The action is authorized...
+
 <a name="intercepting-gate-checks"></a>
-#### Intercepting Gate Checks
-#### Gate 체크 로직의 후킹
+### Intercepting Gate Checks
+### Gate 체크 로직의 후킹
 
 Sometimes, you may wish to grant all abilities to a specific user. You may use the `before` method to define a callback that is run before all other authorization checks:
 
-때로는 특정 사용자에게 모든 권한을 허용하고자 할 수도 있습니다. 권한을 확인하는 모든 체크 로직 앞에서 실행되는 콜백을 정의하기 위해서 `before` 메소드를 사용할 수 있습니다:
+때로는 특정 사용자에게 모든 권한을 허용하고자 할 수도 있습니다. 권한을 확인하는 모든 체크 로직 앞에서 실행되는 콜백을 정의하기 위해서 `before` 메소드를 사용할 수 있습니다.
 
     Gate::before(function ($user, $ability) {
         if ($user->isSuperAdmin()) {
@@ -311,6 +381,52 @@ Policy는 권한을 확인하고자 하는 다양한 액션 만큼 필요한 메
 > {tip} If you used the `--model` option when generating your policy via the Artisan console, it will already contain methods for the `view`, `create`, `update`, `delete`, `restore`, and `forceDelete` actions.
 
 > {tip} 만약 아티즌 명령어를 통해 Policy 클래스를 생성할 때 `--model` 옵션을 사용했다면, 이미 `view`, `create`, `update`, `delete`, `restore` 그리고 `forceDelete` 액션에 해당하는 메소드가 포함되어 있을 겁니다.
+
+<a name="policy-responses"></a>
+### Policy Responses
+### Policy Responses
+
+So far, we have only examined policy methods that return simple boolean values. However, sometimes you may wish to return a more detail response, including an error message. To do so, you may return a `Illuminate\Auth\Access\Response` from your policy method:
+
+지금까지 간단한 부울 값을 반환하는 Policy 메소드 만 살펴 보았습니다. 그러나 때로는 오류 메시지를 포함하여 더 자세한 응답을 반환 할 수도 있습니다. 이를 위해 Policy 메소드에서 `Illuminate\Auth\Access\Response`를 반환 할 수 있습니다.
+
+    use Illuminate\Auth\Access\Response;
+
+    /**
+     * Determine if the given post can be updated by the user.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Post  $post
+     * @return bool
+     */
+    public function update(User $user, Post $post)
+    {
+        return $user->id === $post->user_id
+                    ? Response::allow()
+                    : Response::deny('You do not own this post.');
+    }
+
+When returning an authorization response from your policy, the `Gate::allows` method will still return a simple boolean value; however, you may use use the `Gate::inspect` method to get the full authorization response returned by the gate:
+
+Policy에서 권한 부여 응답을 반환 할 때 `Gate::allows` 메소드는 여전히 간단한 부울 값을 반환하지만 `Gate::inspect` 메소드를 사용하면 게이트에서 반환 된 전체 인증 응답을 얻을 수 있습니다.
+
+
+
+    $response = Gate::inspect('update', $post);
+
+    if ($response->allowed()) {
+        // The action is authorized...
+    } else {
+        echo $response->message();
+    }
+
+Of course, when using the `Gate::authorize` method to throw an `AuthorizationException` if the action is not authorized, the error message provided by the authorization response will be propagated to the HTTP response:
+
+물론, 작업이 승인되지 않은 경우 `Gate::authorize` 메소드를 사용하여 `AuthorizationException`을 발생 시키면, 인증 응답이 제공하는 오류 메시지가 HTTP 응답으로 전파됩니다.
+
+    Gate::authorize('update', $post);
+
+    // The action is authorized...
 
 <a name="methods-without-models"></a>
 ### Methods Without Models
@@ -538,6 +654,7 @@ The following controller methods will be mapped to their corresponding policy me
 
 | Controller Method | Policy Method |
 | --- | --- |
+| index | viewAny |
 | show | view |
 | create | create |
 | store | create |
@@ -595,3 +712,44 @@ Like most of the other authorization methods, you may pass a class name to the `
     @cannot('create', App\Post::class)
         <!-- The Current User Can't Create Posts -->
     @endcannot
+
+<a name="supplying-additional-context"></a>
+### Supplying Additional Context
+### 추가 문맥 제공
+
+When authorizing actions using policies, you may pass an array as the second argument to the various authorization functions and helpers. The first element in the array will be used to determine which policy should be invoked, while the rest of the array elements are passed as parameters to the policy method and can be used for additional context when making authorization decisions. For example, consider the following `PostPolicy` method definition which contains an additional `$category` parameter:
+
+Policy를 사용하여 작업을 승인 할 때 다양한 권한 부여 함수 및 헬퍼의 두 번째 인수로 배열을 전달할 수 있습니다. 배열의 첫 번째 요소는 호출 할 Policy을 결정하는 데 사용되며 나머지 배열 요소는 Policy 메서드의 매개 변수로 전달되어 권한 부여 결정시 추가 문맥에 사용될 수 있습니다. 예를 들어, 다음의 추가 매개 변수 `$category` 를 포함하는 `PostPolicy` 메소드 정의를 참고하십시오.
+
+    /**
+     * Determine if the given post can be updated by the user.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Post  $post
+     * @param  int  $category
+     * @return bool
+     */
+    public function update(User $user, Post $post, int $category)
+    {
+        return $user->id === $post->user_id && 
+               $category > 3;
+    }
+
+When attempting to determine if the authenticated user can update a given post, we can invoke this policy method like so:
+
+인증 된 사용자가 특정 게시물을 업데이트 할 수 있는지 확인하려고하면 다음과 같이 이 Policy 메소드를 호출 할 수 있습니다.
+
+    /**
+     * Update the given blog post.
+     *
+     * @param  Request  $request
+     * @param  Post  $post
+     * @return Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function update(Request $request, Post $post)
+    {
+        $this->authorize('update', [$post, $request->input('category')]);
+
+        // The current user can update the blog post...
+    }
