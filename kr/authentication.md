@@ -53,9 +53,9 @@
 ## Introduction
 ## 시작하기
 
-> {tip} **Want to get started fast?** Just run `php artisan make:auth` and `php artisan migrate` in a fresh Laravel application. Then, navigate your browser to `http://your-app.test/register` or any other URL that is assigned to your application. These two commands will take care of scaffolding your entire authentication system!
+> {tip} **Want to get started fast?** Install the `laravel/ui` Composer package and run `php artisan ui vue --auth` in a fresh Laravel application. After migrating your database, navigate your browser to `http://your-app.test/register` or any other URL that is assigned to your application. These commands will take care of scaffolding your entire authentication system!
 
-> {tip} ** 빠르게 시작하길 원하십니까? ** 새로이 생성한 Laravel 애플리케이션에서 `php artisan make:auth`와 `php artisan migrate`를 실행하십시오. 그 다음, 브라우저에서 `http://your-app.test/register` 또는 다른 URL로 이동하세요. 이 두개의 명령어는 전체적인 인증 시스템을 스캐폴딩합니다.
+> {tip} ** 빠르게 시작하길 원하십니까? ** 새로 생성한 Laravel 애플리케이션에서 `laravel/ui`를 설치하고 `php artisan ui vue --auth`를 실행하십시오. 데이터베이스를 마이그레이션 한 후, 브라우저에서 `http://your-app.test/register` 또는 다른 URL로 이동하세요. 이 명령어는 전체적인 인증 시스템을 스캐폴딩합니다.
 
 Laravel makes implementing authentication very simple. In fact, almost everything is configured for you out of the box. The authentication configuration file is located at `config/auth.php`, which contains several well documented options for tweaking the behavior of the authentication services.
 
@@ -101,11 +101,13 @@ Laravel ships with several pre-built authentication controllers, which are locat
 ### Routing
 ### Routing-라우팅
 
-Laravel provides a quick way to scaffold all of the routes and views you need for authentication using one simple command:
+Laravel's `laravel/ui` package provides a quick way to scaffold all of the routes and views you need for authentication using a few simple commands:
 
-라라벨은 다음의 간단한 명령어를 통해서 인증에서 필요한 모든 라우트와 뷰파일을 손쉽게 스캐폴딩 할 수 있는 손쉬운 방법을 제공합니다:
+Laravel의 `laravel/ui` 패키지는 몇 가지 간단한 명령을 사용하여 인증에 필요한 모든 라우팅과 뷰를 빠르게 스캐폴딩 할 수 있는 방법을 제공합니다.
 
-    php artisan make:auth
+    composer require laravel/ui
+
+    php artisan ui vue --auth
 
 This command should be used on fresh applications and will install a layout view, registration and login views, as well as routes for all authentication end-points. A `HomeController` will also be generated to handle post-login requests to your application's dashboard.
 
@@ -119,13 +121,13 @@ This command should be used on fresh applications and will install a layout view
 ### Views
 ### Views-뷰
 
-As mentioned in the previous section, the `php artisan make:auth` command will create all of the views you need for authentication and place them in the `resources/views/auth` directory.
+As mentioned in the previous section, the `laravel/ui` package's `php artisan ui vue --auth` command will create all of the views you need for authentication and place them in the `resources/views/auth` directory.
 
-앞서 언급하였듯이, `php artisan make:auth` 명령어는 인증에서 필요로 하는 모든 뷰를 생성하여 `resources/views/auth` 디렉토리에 위치시킬 것입니다.
+앞서 언급하였듯이, `laravel/ui` 패키지의 `php artisan ui vue --auth` 명령어는 인증에서 필요로 하는 모든 뷰를 생성하여 `resources/views/auth` 디렉토리에 위치시킬 것입니다.
 
-The `make:auth` command will also create a `resources/views/layouts` directory containing a base layout for your application. All of these views use the Bootstrap CSS framework, but you are free to customize them however you wish.
+The `ui` command will also create a `resources/views/layouts` directory containing a base layout for your application. All of these views use the Bootstrap CSS framework, but you are free to customize them however you wish.
 
-`make:auth` 명령어는 또한 애플리케이션의 베이스 레이아웃을 포함하는 `resources/views/layouts` 디렉토리를 생성할 것입니다. 이 모든 뷰 파일들은 Bootstrap CSS 프레임워크를 사용하지만, 여러분이 원하는 경우 자유롭게 변경할 수 있습니다.
+`ui` 명령어는 또한 애플리케이션의 베이스 레이아웃을 포함하는 `resources/views/layouts` 디렉토리를 생성할 것입니다. 이 모든 뷰 파일들은 Bootstrap CSS 프레임워크를 사용하지만, 여러분이 원하는 경우 자유롭게 변경할 수 있습니다.
 
 <a name="included-authenticating"></a>
 ### Authenticating
@@ -157,7 +159,7 @@ If the redirect path needs custom generation logic you may define a `redirectTo`
         return '/path';
     }
 
-> {tip} The `redirectTo` method will take precedence over the `redirectTo` attribute.
+> {tip} The `redirectTo` method will take precedence over the `redirectTo` property.
 
 > {tip} `redirectTo` 메소드는 `redirectTo` 속성보다 우선합니다.
 
