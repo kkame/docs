@@ -59,9 +59,9 @@ Once the migration has been created, run the `migrate` Artisan command.
 ## Generating Tokens
 ## Generating Tokens-토큰 생성하기
 
-Once the `api_token` column has been added to your `users` table, you are ready to assign random API tokens to each user that registers with your application. You should assign these tokens when a `User` model is created for the user during registration. When using the [authentication scaffolding](/docs/{{version}}/authentication#authentication-quickstart) provided by the `make:auth` Artisan command, this may be done in the `create` method of the `RegisterController`:
+Once the `api_token` column has been added to your `users` table, you are ready to assign random API tokens to each user that registers with your application. You should assign these tokens when a `User` model is created for the user during registration. When using the [authentication scaffolding](/docs/{{version}}/authentication#authentication-quickstart) provided by the `laravel/ui` Composer package, this may be done in the `create` method of the `RegisterController`:
 
-`api_token` 컬럼이 `users` 테이블에 추가되었다면, 여러분의 애플리케이션에 등록하는 유저들에게 랜덤(무작위) API 토큰을 할당할 준비가 되었습니다. 유저등록을 위해서 `User` 모델이 생성 될 때 여러분은 토큰을 할당해야합니다. `make:auth` 아티즌 명령어를 통해서 [authentication scaffolding-인증 스케폴딩](/docs/{{version}}/authentication#authentication-quickstart) 을 이용했다면, `RegisterController` 의 `create` 메소드에서 api_token을 사용 할 수 있습니다. :
+`api_token` 컬럼이 `users` 테이블에 추가되었다면, 여러분의 애플리케이션에 등록하는 유저들에게 랜덤(무작위) API 토큰을 할당할 준비가 되었습니다. 유저등록을 위해서 `User` 모델이 생성 될 때 여러분은 토큰을 할당해야합니다. 컴포저 패키지 `laravel/ui`를 통해서 [authentication scaffolding-인증 스케폴딩](/docs/{{version}}/authentication#authentication-quickstart) 을 이용했다면, `RegisterController` 의 `create` 메소드에서 api_token을 사용 할 수 있습니다.
 
     use Illuminate\Support\Str;
     use Illuminate\Support\Facades\Hash;
